@@ -1,0 +1,5 @@
+# Ignore artifacts
+.haxelib/
+dump/
+export/
+temp/

@@ -1,0 +1,52 @@
+{
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "search.exclude": {
+    "export/**/*.*": true
+  },
+  "[haxe]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "modifications",
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+      "source.sortImports": "explicit"
+    }
+  },
+  "haxe.enableExtendedIndentation": true,
+  "cSpell.words": [
+    "borderless",
+    "CAPSLOCK",
+    "contextmenu",
+    "GRAVEACCENT",
+    "Haxe",
+    "IBEAM",
+    "keybinds",
+    "NUMPADEIGHT",
+    "NUMPADFIVE",
+    "NUMPADFOUR",
+    "NUMPADMINUS",
+    "NUMPADMULTIPLY",
+    "NUMPADNINE",
+    "NUMPADONE",
+    "NUMPADPERIOD",
+    "NUMPADPLUS",
+    "NUMPADSEVEN",
+    "NUMPADSIX",
+    "NUMPADSLASH",
+    "NUMPADTHREE",
+    "NUMPADTWO",
+    "NUMPADZERO",
+    "openeditors",
+    "Polyverse",
+    "rougelite",
+    "stringfromjava",
+    "Tiltshift"
+  ],
+  "files.autoSave": "afterDelay",
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "": true
+  }
+}
