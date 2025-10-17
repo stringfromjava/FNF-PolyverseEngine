@@ -66,7 +66,7 @@ class DiscordClient
     trace('Discord: Disconnected ($errorCode: ${cast(message, String)})');
   }
 
-  public static function initialize()
+  public static function initialize():Void
   {
     var discordHandlers:DiscordEventHandlers = DiscordEventHandlers.create();
     discordHandlers.ready = cpp.Function.fromStaticFunction(onReady);
@@ -117,22 +117,22 @@ class DiscordClient
     //trace('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp, $largeImageKey');
   }
 
-  public static function updatePresence()
+  public static function updatePresence():Void
   {
     Discord.UpdatePresence(cpp.RawConstPointer.addressOf(presence.__presence));
   }
   
-  inline public static function resetClientID()
+  inline public static function resetClientID():Void
   {
     clientID = _defaultID;
   }
 
-  private static function set_clientID(newID:String)
+  private static function set_clientID(newID:String):String
   {
     var change:Bool = (clientID != newID);
     clientID = newID;
 
-    if(change && isInitialized)
+    if (change && isInitialized)
     {
       shutdown();
       initialize();

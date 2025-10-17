@@ -22,7 +22,7 @@ class ABotSpeaker extends FlxSpriteGroup
   var volumes:Array<Float> = [];
 
   public var snd(default, set):FlxSound;
-  function set_snd(changed:FlxSound)
+  function set_snd(changed:FlxSound):FlxSound
   {
     snd = changed;
     #if funkin.vis
