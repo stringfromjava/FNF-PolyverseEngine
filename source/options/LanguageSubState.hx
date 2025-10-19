@@ -100,9 +100,9 @@ class LanguageSubState extends MusicBeatSubstate
     super.update(elapsed);
 
     var mult:Int = (FlxG.keys.pressed.SHIFT) ? 4 : 1;
-    if(controls.UI_UP_P)
+    if(controls.UI_UP_JP)
       changeSelected(-1 * mult);
-    if(controls.UI_DOWN_P)
+    if(controls.UI_DOWN_JP)
       changeSelected(1 * mult);
     if(FlxG.mouse.wheel != 0)
       changeSelected(FlxG.mouse.wheel * mult);

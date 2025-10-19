@@ -16,7 +16,7 @@ class MusicBeatState extends FlxState
   public var controls(get, never):Controls;
   private function get_controls()
   {
-    return Controls.instance;
+    return Controls.getControls();
   }
 
   var _psychCameraInitialized:Bool = false;

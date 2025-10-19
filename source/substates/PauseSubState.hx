@@ -178,11 +178,11 @@ class PauseSubState extends MusicBeatSubstate
     }
 
     updateSkipTextStuff();
-    if (controls.UI_UP_P)
+    if (controls.UI_UP_JP)
     {
       changeSelection(-1);
     }
-    if (controls.UI_DOWN_P)
+    if (controls.UI_DOWN_JP)
     {
       changeSelection(1);
     }
@@ -191,13 +191,13 @@ class PauseSubState extends MusicBeatSubstate
     switch (daSelected)
     {
       case 'Skip Time':
-        if (controls.UI_LEFT_P)
+        if (controls.UI_LEFT_JP)
         {
           FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
           curTime -= 1000;
           holdTime = 0;
         }
-        if (controls.UI_RIGHT_P)
+        if (controls.UI_RIGHT_JP)
         {
           FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
           curTime += 1000;
@@ -218,7 +218,7 @@ class PauseSubState extends MusicBeatSubstate
         }
     }
 
-    if (controls.ACCEPT && (cantUnpause <= 0 || !controls.controllerMode))
+    if (controls.ACCEPT && (cantUnpause <= 0 || !Controls.controllerMode))
     {
       if (menuItems == difficultyChoices)
       {

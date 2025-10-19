@@ -375,10 +375,14 @@ class Project extends HXProject
     // Enable translations by default.
     TRANSLATIONS_ALLOWED.apply(this, true);
 
+    // Enable base game files by default.
+    // If you're making a mod by modifying the engine's source code,
+    // we recommend setting this conditional to false!
+    BASE_GAME_FILES.apply(this, false);
+
     // Official build conditionals only.
     if (isOfficialBuild())
     {
-      BASE_GAME_FILES.apply(this, true);
       VIDEOS_ALLOWED.apply(this, isWindows() || isMac() || isLinux() || isAndroid() && !is32Bit());
     }
 
@@ -407,11 +411,6 @@ class Project extends HXProject
       setHaxedef('HXCPP_CHECK_POINTER');
       setHaxedef('HXCPP_STACK_LINE');
       setHaxedef('HXCPP_STACK_TRACE');
-    }
-    
-    if (HSCRIPT_ALLOWED.isEnabled(this))
-    {
-      setHaxedef('hscriptPos');
     }
 
     setHaxedef('safeMode');
@@ -519,11 +518,6 @@ class Project extends HXProject
     // CUSTOM
     // ===================
 
-    // HScript debug support.
-    if (HSCRIPT_ALLOWED.isEnabled(this))
-    {
-      addHaxelib('hscript-iris', '1.1.3');
-    }
     // JSON parsing.
     addHaxelib('tjson', '1.4.0');
     // Discord rich presence.
@@ -535,11 +529,6 @@ class Project extends HXProject
     addHaxelib('hxvlc', '2.0.1');
     // Adobe animate support.
     addHaxelib('flxanimate');
-    // Lua scripting support.
-    if (LUA_ALLOWED.isEnabled(this))
-    {
-      addHaxelib('linc_luajit');
-    }
     // Audio data into frequency data.
     if (BASE_GAME_FILES.isEnabled(this))
     {

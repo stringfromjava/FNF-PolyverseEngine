@@ -78,20 +78,20 @@ class MasterEditorMenu extends MusicBeatState
 
   override function update(elapsed:Float)
   {
-    if (controls.UI_UP_P)
+    if (controls.UI_UP_JP)
     {
       changeSelection(-1);
     }
-    if (controls.UI_DOWN_P)
+    if (controls.UI_DOWN_JP)
     {
       changeSelection(1);
     }
     #if MODS_ALLOWED
-    if(controls.UI_LEFT_P)
+    if(controls.UI_LEFT_JP)
     {
       changeDirectory(-1);
     }
-    if(controls.UI_RIGHT_P)
+    if(controls.UI_RIGHT_JP)
     {
       changeDirectory(1);
     }

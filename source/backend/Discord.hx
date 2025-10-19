@@ -1,80 +1,135 @@
 package backend;
 
 #if DISCORD_ALLOWED
-import Sys.sleep;
-import sys.thread.Thread;
-import lime.app.Application;
-
-import hxdiscord_rpc.Discord;
-import hxdiscord_rpc.Types;
-
+import cpp.ConstCharStar;
+import cpp.RawConstPointer;
 import flixel.util.FlxStringUtil;
+import hxdiscord_rpc.Discord;
+import hxdiscord_rpc.Types.DiscordEventHandlers;
+import hxdiscord_rpc.Types.DiscordRichPresence;
+import hxdiscord_rpc.Types.DiscordUser;
+import lime.app.Application;
+import sys.thread.Thread;
+#end
 
-class DiscordClient
+/**
+ * Utility class which handles Discord rich presence
+ * in the user's Discord "Activity" box.
+ */
+final class DiscordClient
 {
+  /**
+   * Is Discord presence currently active?
+   */
   public static var isInitialized:Bool = false;
-  private inline static final _defaultID:String = "863222024192262205";
-  public static var clientID(default, set):String = _defaultID;
-  private static var presence:DiscordPresence = new DiscordPresence();
-  // hides this field from scripts and reflection in general
-  @:unreflective private static var __thread:Thread;
 
-  public static function check()
+  #if DISCORD_ALLOWED
+  /**
+   * The current Discord client set. This is the ID of a Discord application
+   * that is used to connect and display 
+   */
+  public static var clientID(default, set):String = DEFAULT_CLIENT_ID;
+
+  static inline final DEFAULT_CLIENT_ID:String = '863222024192262205';
+  static var presence:DiscordPresence = new DiscordPresence();
+
+  // Hide this field from scripts.
+  @:unreflective static var __thread:Thread;
+  #end
+
+  function new() {}
+
+  /**
+   * Run a check on whether the game's rich presence is either setup or shutdown,
+   * then act accordingly.
+   */
+  public static function check():Void
   {
-    if(ClientPrefs.data.discordRPC) initialize();
-    else if(isInitialized) shutdown();
-  }
-  
-  public static function prepare()
-  {
-    if (!isInitialized && ClientPrefs.data.discordRPC)
+    #if DISCORD_ALLOWED
+    if (ClientPrefs.data.discordRPC)
+    {
       initialize();
-
-    Application.current.window.onClose.add(function() {
-      if(isInitialized) shutdown();
-    });
+    }
+    else if (isInitialized)
+    {
+      shutdown();
+    }
+    #end
   }
 
-  public dynamic static function shutdown()
+  /**
+   * Prepares Discord rich presence on the pre-setup in `InitState.hx`.
+   */
+  public static function prepare():Void
   {
+    #if DISCORD_ALLOWED
+    if (!isInitialized && ClientPrefs.data.discordRPC)
+    {
+      initialize();
+    }
+
+    Application.current.window.onClose.add(function()
+    {
+      if (isInitialized)
+      {
+        shutdown();
+      }
+    });
+    #end
+  }
+
+  /**
+   * Shuts down Discord rich presence. Should only be called after `initialize()` is called!
+   */
+  public static function shutdown():Void
+  {
+    #if DISCORD_ALLOWED
     isInitialized = false;
     Discord.Shutdown();
+    #end
   }
-  
-  private static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
-  {
-    final user = cast (request[0].username, String);
-    final discriminator = cast (request[0].discriminator, String);
 
-    var message = '(Discord) Connected to User ';
-    if (discriminator != '0') //Old discriminators
+  static function onReady(request:RawConstPointer<DiscordUser>):Void
+  {
+    final user:String = cast(request[0].username, String);
+    final discriminator:String = cast(request[0].discriminator, String);
+
+    var message:String = '(Discord) Connected to User ';
+    if (discriminator != '0') // Old discriminators
       message += '($user#$discriminator)';
-    else //New Discord IDs/Discriminator system
+    else // New Discord IDs/Discriminator system
       message += '($user)';
 
     trace(message);
     changePresence();
   }
 
-  private static function onError(errorCode:Int, message:cpp.ConstCharStar):Void
+  static function onError(errorCode:Int, message:ConstCharStar):Void
   {
-    trace('Discord: Error ($errorCode: ${cast(message, String)})');
+    trace('Discord: Error ($errorCode: ${cast (message, String)})');
   }
 
-  private static function onDisconnected(errorCode:Int, message:cpp.ConstCharStar):Void
+  static function onDisconnected(errorCode:Int, message:ConstCharStar):Void
   {
-    trace('Discord: Disconnected ($errorCode: ${cast(message, String)})');
+    trace('Discord: Disconnected ($errorCode: ${cast (message, String)})');
   }
 
+  /**
+   * Setup Discord rich presence.
+   * 
+   * This should be called ONLY once. After you 
+   */
   public static function initialize():Void
   {
+    #if DISCORD_ALLOWED
     var discordHandlers:DiscordEventHandlers = DiscordEventHandlers.create();
     discordHandlers.ready = cpp.Function.fromStaticFunction(onReady);
     discordHandlers.disconnected = cpp.Function.fromStaticFunction(onDisconnected);
     discordHandlers.errored = cpp.Function.fromStaticFunction(onError);
     Discord.Initialize(clientID, cpp.RawPointer.addressOf(discordHandlers), 1, null);
 
-    if(!isInitialized) trace("Discord Client initialized");
+    if (!isInitialized)
+      trace("Discord Client initialized");
 
     if (__thread == null)
     {
@@ -96,13 +151,28 @@ class DiscordClient
       });
     }
     isInitialized = true;
+    #end
   }
 
-  public static function changePresence(details:String = 'In the Menus', ?state:String, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float, largeImageKey:String = 'icon')
+  /**
+   * Change the presence display in the user's Discord "Activity" box.
+   * 
+   * @param details           The details to be displayed. Some examples might be "In the Menus", "Changing Options", etc.
+   * @param state             The current state the user is in (this does NOT mean Flixel states!).
+   * @param smallImageKey     The ID of the small icon that is displayed in the bottom-right corner of the icon in the presence.
+   * @param hasStartTimestamp Does the user have an already started timestamp? 
+   * @param endTimestamp      The ended timestamp.
+   * @param largeImageKey     The ID of the large image display. This is the main icon users on Discord would see on the current presence.
+   */
+  public static function changePresence(details:String = 'In the Menus', ?state:String, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float,
+      largeImageKey:String = 'icon'):Void
   {
+    #if DISCORD_ALLOWED
     var startTimestamp:Float = 0;
-    if (hasStartTimestamp) startTimestamp = Date.now().getTime();
-    if (endTimestamp > 0) endTimestamp = startTimestamp + endTimestamp;
+    if (hasStartTimestamp)
+      startTimestamp = Date.now().getTime();
+    if (endTimestamp > 0)
+      endTimestamp = startTimestamp + endTimestamp;
 
     presence.state = state;
     presence.details = details;
@@ -113,21 +183,28 @@ class DiscordClient
     presence.startTimestamp = Std.int(startTimestamp / 1000);
     presence.endTimestamp = Std.int(endTimestamp / 1000);
     updatePresence();
-
-    //trace('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp, $largeImageKey');
+    #end
   }
 
+  /**
+   * Send an update to the 
+   */
   public static function updatePresence():Void
   {
-    Discord.UpdatePresence(cpp.RawConstPointer.addressOf(presence.__presence));
-  }
-  
-  inline public static function resetClientID():Void
-  {
-    clientID = _defaultID;
+    #if DISCORD_ALLOWED
+    Discord.UpdatePresence(RawConstPointer.addressOf(presence.__presence));
+    #end
   }
 
-  private static function set_clientID(newID:String):String
+  public static inline function resetClientID():Void
+  {
+    #if DISCORD_ALLOWED
+    clientID = DEFAULT_CLIENT_ID;
+    #end
+  }
+
+  #if DISCORD_ALLOWED
+  static function set_clientID(newID:String):String
   {
     var change:Bool = (clientID != newID);
     clientID = newID;
@@ -140,31 +217,24 @@ class DiscordClient
     }
     return newID;
   }
+  #end
 
   #if MODS_ALLOWED
   public static function loadModRPC()
   {
+    #if DISCORD_ALLOWED
     var pack:Dynamic = Mods.getPack();
-    if(pack != null && pack.discordRPC != null && pack.discordRPC != clientID)
+    if (pack != null && pack.discordRPC != null && pack.discordRPC != clientID)
     {
       clientID = pack.discordRPC;
-      //trace('Changing clientID! $clientID, $_defaultID');
+      // trace('Changing clientID! $clientID, $_defaultID');
     }
-  }
-  #end
-
-  #if LUA_ALLOWED
-  public static function addLuaCallbacks(lua:State)
-  {
-    Lua_helper.add_callback(lua, "changeDiscordPresence", changePresence);
-    Lua_helper.add_callback(lua, "changeDiscordClientID", function(?newID:String) {
-      if(newID == null) newID = _defaultID;
-      clientID = newID;
-    });
+    #end
   }
   #end
 }
 
+#if DISCORD_ALLOWED
 @:allow(backend.DiscordClient)
 private final class DiscordPresence
 {
@@ -230,7 +300,7 @@ private final class DiscordPresence
   {
     return __presence.largeImageKey;
   }
-  
+
   @:noCompletion inline function set_largeImageKey(value:String):String
   {
     return __presence.largeImageKey = value;

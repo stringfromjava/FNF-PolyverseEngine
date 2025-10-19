@@ -343,7 +343,7 @@
     {
       "props": {
         "allowSingleLineStatement": true,
-        "tokens": ["FOR", "ELSE_IF", "WHILE", "DO_WHILE"]
+        "tokens": []
       },
       "type": "NeedBraces"
     },

@@ -53,7 +53,7 @@ class FlashingState extends MusicBeatState
       return;
     }
     var back:Bool = controls.BACK;
-    if (controls.UI_LEFT_P || controls.UI_RIGHT_P) {
+    if (controls.UI_LEFT_JP || controls.UI_RIGHT_P) {
       FlxG.sound.play(Paths.sound("scrollMenu"), 0.7);
       isYes = !isYes;
       updateItems();

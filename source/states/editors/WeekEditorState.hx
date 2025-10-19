@@ -764,8 +764,8 @@ class WeekEditorFreeplayState extends MusicBeatState implements PsychUIEventHand
         else openSubState(new ExitConfirmationPrompt());
       }
 
-      if(controls.UI_UP_P) changeSelection(-1);
-      if(controls.UI_DOWN_P) changeSelection(1);
+      if(controls.UI_UP_JP) changeSelection(-1);
+      if(controls.UI_DOWN_JP) changeSelection(1);
     }
     super.update(elapsed);
   }

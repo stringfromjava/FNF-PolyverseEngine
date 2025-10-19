@@ -144,10 +144,10 @@ class GameplayChangersSubstate extends MusicBeatSubstate
   var holdValue:Float = 0;
   override function update(elapsed:Float)
   {
-    if (controls.UI_UP_P)
+    if (controls.UI_UP_JP)
       changeSelection(-1);
 
-    if (controls.UI_DOWN_P)
+    if (controls.UI_DOWN_JP)
       changeSelection(1);
 
     if (controls.BACK)
@@ -174,7 +174,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
       {
         if(controls.UI_LEFT || controls.UI_RIGHT)
         {
-          var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P);
+          var pressed = (controls.UI_LEFT_JP || controls.UI_RIGHT_JP);
           if(holdTime > 0.5 || pressed)
           {
             if(pressed)
@@ -205,7 +205,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
                 case STRING:
                   var num:Int = curOption.curOption; //lol
-                  if(controls.UI_LEFT_P) --num;
+                  if(controls.UI_LEFT_JP) --num;
                   else num++;
 
                   if(num < 0)

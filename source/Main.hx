@@ -4,23 +4,8 @@ import backend.Highscore;
 import debug.FPSCounter;
 import flixel.FlxGame;
 import flixel.FlxState;
-import lime.app.Application;
 import openfl.Lib;
 import openfl.display.Sprite;
-import openfl.display.StageScaleMode;
-import states.TitleState;
-#if HSCRIPT_ALLOWED
-import crowplexus.iris.Iris;
-import psychlua.HScript.HScriptInfos;
-#end
-#if (linux || mac)
-import lime.graphics.Image;
-#end
-#if CRASH_HANDLER
-import haxe.CallStack;
-import haxe.io.Path;
-import openfl.events.UncaughtErrorEvent;
-#end
 #if android
 import android.content.Context;
 #end
@@ -89,7 +74,7 @@ class Main extends Sprite
   static final game:GameSettings = {
     width: 1280,
     height: 720,
-    initialState: TitleState,
+    initialState: InitState,
     framerate: 60,
     skipSplash: true,
     startFullscreen: false
@@ -114,71 +99,40 @@ class Main extends Sprite
     backend.Native.fixScaling();
     #end
 
-    // Credits to MAJigsaw77 (he's the og author for this code)
+    // Set the current working directory for mobile platforms.
+    // Credits to MAJigsaw77 for this code.
     #if android
     Sys.setCwd(Path.addTrailingSlash(Context.getExternalFilesDir()));
     #elseif ios
     Sys.setCwd(lime.system.System.applicationStorageDirectory);
     #end
 
+    // Load and configure the hxvlc library for
+    // displaying videos in-game. 
     #if VIDEOS_ALLOWED
     hxvlc.util.Handle.init(#if (hxvlc >= "1.8.0") ['--no-lua'] #end);
     #end
 
-    #if LUA_ALLOWED
-    Mods.pushGlobalMods();
-    #end
     Mods.loadTopMod();
 
-    FlxG.save.bind('funkin', CoolUtil.getSavePath());
-    Highscore.load();
-
-    #if LUA_ALLOWED
-    Lua.set_callbacks_function(cpp.Callable.fromStaticFunction(psychlua.CallbackHandler.call));
-    #end
-
-    Controls.instance = new Controls();
-    ClientPrefs.loadDefaultKeys();
-    #if ACHIEVEMENTS_ALLOWED
-    Achievements.load();
-    #end
-
+    // Add the game to the window's display.
     addChild(new FlxGame(game.width, game.height, game.initialState, game.framerate, game.framerate, game.skipSplash, game.startFullscreen));
 
+    // Add an FPS and memory usage display
+    // on the top-left corner of the game's window.
+    // (Only is enabled for non-mobile platforms!)
     #if !mobile
     fpsVar = new FPSCounter(10, 3, 0xFFFFFF);
     addChild(fpsVar);
-    Lib.current.stage.align = "tl";
-    Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
     if (fpsVar != null)
     {
       fpsVar.visible = ClientPrefs.data.showFPS;
     }
     #end
 
-    #if (linux || mac) // fix the app icon not showing up on the Linux Panel / Mac Dock
-    var icon = Image.fromFile("icon.png");
-    Lib.current.stage.window.setIcon(icon);
-    #end
-
-    #if html5
-    FlxG.autoPause = false;
-    FlxG.mouse.visible = false;
-    #end
-
-    FlxG.fixedTimestep = false;
-    FlxG.game.focusLostFramerate = 60;
-    FlxG.keys.preventDefaultKeys = [TAB];
-
-    #if CRASH_HANDLER
-    Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
-    #end
-
-    #if DISCORD_ALLOWED
-    DiscordClient.prepare();
-    #end
-
-    // shader coords fix
+    // Reset the sprite cache when the screen is resized.
+    // This to prevent some shaders that rely on the screen size
+    // from breaking and causing weird formations on the display.
     FlxG.signals.gameResized.add(function(w, h)
     {
       if (FlxG.cameras != null)
@@ -206,54 +160,4 @@ class Main extends Sprite
       sprite.__cacheBitmapData = null;
     }
   }
-
-  // Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
-  // very cool person for real they don't get enough credit for their work
-  #if CRASH_HANDLER
-  function onCrash(e:UncaughtErrorEvent):Void
-  {
-    var errMsg:String = "";
-    var path:String;
-    var callStack:Array<StackItem> = CallStack.exceptionStack(true);
-    var dateNow:String = Date.now().toString();
-
-    dateNow = dateNow.replace(" ", "_");
-    dateNow = dateNow.replace(":", "'");
-
-    path = "./crash/" + "PsychEngine_" + dateNow + ".txt";
-
-    for (stackItem in callStack)
-    {
-      switch (stackItem)
-      {
-        case FilePos(s, file, line, column):
-          errMsg += file + " (line " + line + ")\n";
-        default:
-          Sys.println(stackItem);
-      }
-    }
-
-    errMsg += "\nUncaught Error: " + e.error;
-    // remove if you're modding and want the crash log message to contain the link
-    // please remember to actually modify the link for the github page to report the issues to.
-    #if officialBuild
-    errMsg += "\nPlease report this error to the GitHub page: https://github.com/ShadowMario/FNF-PsychEngine";
-    #end
-    errMsg += "\n\n> Crash Handler written by: sqirra-rng";
-
-    if (!FileSystem.exists("./crash/"))
-      FileSystem.createDirectory("./crash/");
-
-    File.saveContent(path, errMsg + "\n");
-
-    Sys.println(errMsg);
-    Sys.println("Crash dump saved in " + Path.normalize(path));
-
-    Application.current.window.alert(errMsg, "Error!");
-    #if DISCORD_ALLOWED
-    DiscordClient.shutdown();
-    #end
-    Sys.exit(1);
-  }
-  #end
 }

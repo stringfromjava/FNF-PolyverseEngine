@@ -130,11 +130,11 @@ class BaseOptionsMenu extends MusicBeatSubstate
       return;
     }
 
-    if (controls.UI_UP_P)
+    if (controls.UI_UP_JP)
     {
       changeSelection(-1);
     }
-    if (controls.UI_DOWN_P)
+    if (controls.UI_DOWN_JP)
     {
       changeSelection(1);
     }
@@ -184,7 +184,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
         default:
           if(controls.UI_LEFT || controls.UI_RIGHT)
           {
-            var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P);
+            var pressed = (controls.UI_LEFT_JP || controls.UI_RIGHT_JP);
             if(holdTime > 0.5 || pressed)
             {
               if(pressed)
@@ -213,7 +213,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
     
                   case STRING:
                     var num:Int = curOption.curOption; //lol
-                    if(controls.UI_LEFT_P) --num;
+                    if(controls.UI_LEFT_JP) --num;
                     else num++;
     
                     if(num < 0)
@@ -276,7 +276,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
         }
         else
         {
-          leOption.setValue(!Controls.instance.controllerMode ? leOption.defaultKeys.keyboard : leOption.defaultKeys.gamepad);
+          leOption.setValue(!Controls.controllerMode ? leOption.defaultKeys.keyboard : leOption.defaultKeys.gamepad);
           updateBind(leOption);
         }
         leOption.change();
@@ -306,9 +306,9 @@ class BaseOptionsMenu extends MusicBeatSubstate
       holdingEsc += elapsed;
       if(holdingEsc > 0.5)
       {
-        if (!controls.controllerMode) curOption.keys.keyboard = NONE;
+        if (!Controls.controllerMode) curOption.keys.keyboard = NONE;
         else curOption.keys.gamepad = NONE;
-        updateBind(!controls.controllerMode ? InputFormatter.getKeyName(NONE) : InputFormatter.getGamepadName(NONE));
+        updateBind(!Controls.controllerMode ? InputFormatter.getKeyName(NONE) : InputFormatter.getGamepadName(NONE));
         FlxG.sound.play(Paths.sound('cancelMenu'));
         closeBinding();
       }
@@ -317,7 +317,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
     {
       holdingEsc = 0;
       var changed:Bool = false;
-      if(!controls.controllerMode)
+      if(!Controls.controllerMode)
       {
         if(FlxG.keys.justPressed.ANY || FlxG.keys.justReleased.ANY)
         {
@@ -373,7 +373,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
       if(changed)
       {
         var key:String = null;
-        if(!controls.controllerMode)
+        if(!Controls.controllerMode)
         {
           if(curOption.keys.keyboard == null) curOption.keys.keyboard = 'NONE';
           curOption.setValue(curOption.keys.keyboard);
@@ -401,7 +401,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
       text = option.getValue();
       if(text == null) text = 'NONE';
 
-      if(!controls.controllerMode)
+      if(!Controls.controllerMode)
         text = InputFormatter.getKeyName(FlxKey.fromString(text));
       else
         text = InputFormatter.getGamepadName(FlxGamepadInputID.fromString(text));
@@ -425,7 +425,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
   function playstationCheck(alpha:Alphabet)
   {
-    if(!controls.controllerMode) return;
+    if(!Controls.controllerMode) return;
 
     var gamepad:FlxGamepad = FlxG.gamepads.firstActive;
     var model:FlxGamepadModel = gamepad != null ? gamepad.detectedModel : UNKNOWN;

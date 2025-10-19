@@ -81,7 +81,7 @@ class MusicPlayer extends FlxGroup
     switchPlayMusic();
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -98,7 +98,7 @@ class MusicPlayer extends FlxGroup
 
     //if(FlxG.keys.justPressed.K) trace('Time: ${FreeplayState.vocals.time}, Playing: ${FreeplayState.vocals.playing}');
 
-    if (controls.UI_LEFT_P)
+    if (controls.UI_LEFT_JP)
     {
       if (playing)
         wasPlaying = true;
@@ -114,7 +114,7 @@ class MusicPlayer extends FlxGroup
       FlxG.sound.music.time = curTime;
       setVocalsTime(curTime);
     }
-    if (controls.UI_RIGHT_P)
+    if (controls.UI_RIGHT_JP)
     {
       if (playing)
         wasPlaying = true;
@@ -158,18 +158,19 @@ class MusicPlayer extends FlxGroup
         wasPlaying = false;
       }
     }
-    if (controls.UI_UP_P)
+    if (controls.UI_UP_JP)
     {
       holdPitchTime = 0;
       playbackRate += 0.05;
       setPlaybackRate();
     }
-    else if (controls.UI_DOWN_P)
+    else if (controls.UI_DOWN_JP)
     {
       holdPitchTime = 0;
       playbackRate -= 0.05;
       setPlaybackRate();
     }
+
     if (controls.UI_DOWN || controls.UI_UP)
     {
       holdPitchTime += elapsed;

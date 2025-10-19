@@ -657,7 +657,7 @@ class EditorPlayState extends MusicBeatSubstate
     var key:Int = PlayState.getKeyFromEvent(keysArray, eventKey);
     //trace('Pressed: ' + eventKey);
 
-    if (!controls.controllerMode)
+    if (!Controls.controllerMode)
     {
       #if debug
       //Prevents crash specifically on debug without needing to try catch shit
@@ -724,7 +724,7 @@ class EditorPlayState extends MusicBeatSubstate
     var key:Int = PlayState.getKeyFromEvent(keysArray, eventKey);
     //trace('Pressed: ' + eventKey);
 
-    if(!controls.controllerMode && key > -1) keyReleased(key);
+    if(!Controls.controllerMode && key > -1) keyReleased(key);
   }
 
   private function keyReleased(key:Int)
@@ -746,13 +746,13 @@ class EditorPlayState extends MusicBeatSubstate
     var releaseArray:Array<Bool> = [];
     for (key in keysArray)
     {
-      holdArray.push(controls.pressed(key));
-      pressArray.push(controls.justPressed(key));
-      releaseArray.push(controls.justReleased(key));
+      holdArray.push(Controls.pressed(key));
+      pressArray.push(Controls.justPressed(key));
+      releaseArray.push(Controls.justReleased(key));
     }
 
     // TO DO: Find a better way to handle controller inputs, this should work for now
-    if(controls.controllerMode && pressArray.contains(true))
+    if(Controls.controllerMode && pressArray.contains(true))
       for (i in 0...pressArray.length)
         if(pressArray[i])
           keyPressed(i);
@@ -776,7 +776,7 @@ class EditorPlayState extends MusicBeatSubstate
     }
 
     // TO DO: Find a better way to handle controller inputs, this should work for now
-    if(controls.controllerMode && releaseArray.contains(true))
+    if(Controls.controllerMode && releaseArray.contains(true))
       for (i in 0...releaseArray.length)
         if(releaseArray[i])
           keyReleased(i);
