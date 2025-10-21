@@ -16,7 +16,7 @@
 	"storyName": "Due Debts",
 	"weekBefore": "",
 	"weekName": "Weekend 1",
-	"startUnlocked": true,
+	"startUnlocked": false,
 
 	"hideStoryMode": false,
 	"hideFreeplay": false,

@@ -12,18 +12,23 @@ import flixel.util.FlxDestroyUtil;
 import openfl.utils.Assets;
 import haxe.Json;
 
+/**
+ * Menu where you can select any song from any week to play in Freeplay mode.
+ * You can also use this menu to change gameplay settings that affect the way a
+ * song is played.
+ */
 class FreeplayState extends MusicBeatState
 {
   var songs:Array<SongMetadata> = [];
 
   var selector:FlxText;
 
-  private static var curSelected:Int = 0;
+  static var curSelected:Int = 0;
 
   var lerpSelected:Float = 0;
   var curDifficulty:Int = -1;
 
-  private static var lastDifficultyName:String = Difficulty.getDefault();
+  static var lastDifficultyName:String = Difficulty.getDefault();
 
   var scoreBG:FlxSprite;
   var scoreText:FlxText;
@@ -76,8 +81,12 @@ class FreeplayState extends MusicBeatState
 
     for (i in 0...WeekData.weeksList.length)
     {
+      #if !debug
       if (weekIsLocked(WeekData.weeksList[i]))
+      {
         continue;
+      }
+      #end
 
       var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
       var leSongs:Array<String> = [];
@@ -130,10 +139,6 @@ class FreeplayState extends MusicBeatState
       // using a FlxGroup is too much fuss!
       iconArray.push(icon);
       add(icon);
-
-      // songText.x += 40;
-      // DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-      // songText.screenCenter(X);
     }
     WeekData.setDirectoryFromWeek();
 
@@ -162,7 +167,9 @@ class FreeplayState extends MusicBeatState
     add(missingText);
 
     if (curSelected >= songs.length)
+    {
       curSelected = 0;
+    }
     bg.color = songs[curSelected].color;
     intendedColor = bg.color;
     lerpSelected = curSelected;
@@ -190,14 +197,14 @@ class FreeplayState extends MusicBeatState
     super.create();
   }
 
-  override function closeSubState()
+  override function closeSubState():Void
   {
     changeSelection(0, false);
     persistentUpdate = true;
     super.closeSubState();
   }
 
-  public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int)
+  public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int):Void
   {
     songs.push(new SongMetadata(songName, weekNum, songCharacter, color));
   }
@@ -472,7 +479,7 @@ class FreeplayState extends MusicBeatState
     super.update(elapsed);
   }
 
-  function getVocalFromCharacter(char:String)
+  function getVocalFromCharacter(char:String):Dynamic
   {
     try
     {
@@ -490,7 +497,7 @@ class FreeplayState extends MusicBeatState
     return null;
   }
 
-  public static function destroyFreeplayVocals()
+  public static function destroyFreeplayVocals():Void
   {
     if (vocals != null)
       vocals.stop();
@@ -501,7 +508,7 @@ class FreeplayState extends MusicBeatState
     opponentVocals = FlxDestroyUtil.destroy(opponentVocals);
   }
 
-  function changeDiff(change:Int = 0)
+  function changeDiff(change:Int = 0):Void
   {
     if (player.playingMusic)
       return;
@@ -524,7 +531,7 @@ class FreeplayState extends MusicBeatState
     missingTextBG.visible = false;
   }
 
-  function changeSelection(change:Int = 0, playSound:Bool = true)
+  function changeSelection(change:Int = 0, playSound:Bool = true):Void
   {
     if (player.playingMusic)
       return;
@@ -573,10 +580,10 @@ class FreeplayState extends MusicBeatState
     _updateSongLastDifficulty();
   }
 
-  inline private function _updateSongLastDifficulty()
+  inline function _updateSongLastDifficulty():Void
     songs[curSelected].lastDifficulty = Difficulty.getString(curDifficulty, false);
 
-  private function positionHighscore()
+  function positionHighscore():Void
   {
     scoreText.x = FlxG.width - scoreText.width - 6;
     scoreBG.scale.x = FlxG.width - scoreText.x + 6;
@@ -588,7 +595,7 @@ class FreeplayState extends MusicBeatState
   var _drawDistance:Int = 4;
   var _lastVisibles:Array<Int> = [];
 
-  public function updateTexts(elapsed:Float = 0.0)
+  public function updateTexts(elapsed:Float = 0.0):Void
   {
     lerpSelected = FlxMath.lerp(curSelected, lerpSelected, Math.exp(-elapsed * 9.6));
     for (i in _lastVisibles)

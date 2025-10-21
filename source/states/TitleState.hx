@@ -73,10 +73,12 @@ class TitleState extends MusicBeatState
   {
     persistentUpdate = true;
     if (!InitState.initialized && FlxG.sound.music == null)
+    {
       FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+    }
 
     loadJsonData();
-    #if TITLE_SCREEN_EASTER_EGG easterEggData(); #end
+
     Conductor.bpm = musicBPM;
 
     logoBl = new FlxSprite(logoPosition.x, logoPosition.y);
@@ -155,9 +157,13 @@ class TitleState extends MusicBeatState
     add(ngSpr);
 
     if (InitState.initialized)
+    {
       skipIntro();
+    }
     else
+    {
       InitState.initialized = true;
+    }
   }
 
   // JSON data
